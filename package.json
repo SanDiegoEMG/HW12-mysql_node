@@ -1,0 +1,26 @@
+{
+  "name": "hw12-mysql_node",
+  "version": "1.0.0",
+  "description": "Creating online store with inventory changes",
+  "main": "store.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SanDiegoEMG/HW12-mysql_node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SanDiegoEMG/HW12-mysql_node/issues"
+  },
+  "homepage": "https://github.com/SanDiegoEMG/HW12-mysql_node#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "console.table": "^0.10.0",
+    "dotenv": "^6.2.0",
+    "inquirer": "^6.2.1",
+    "mysql": "^2.16.0"
+  }
+}
