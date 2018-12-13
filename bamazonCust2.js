@@ -33,19 +33,19 @@ function updateOrBuy() {
         }
     ]).then(function (ans) {
         if (ans.buyOrChange === "Buy an item") { 
-            callData()
+            callData(promptItem)
         } else {
             console.log("This will be awesome if I see this!")
         }
     })
 }
 
-function callData() {
+function callData(callback) {
     connection.query(
         'SELECT item_id, product_name, price, stock_quantity FROM products;', function (error, results) {
             if (error) throw error;
             console.table(results);
-            promptItem();
+            callback();
         });
 }
 
@@ -78,7 +78,7 @@ function promptItem() {
                         updateProduct(newQuantity, ans.itemID);
                     } else {
                         console.log("\n \n \n Not enough product. Choose another item \n \n \n");
-                        callData();
+                        callData(updateOrBuy);
                     }
                 }
             );
@@ -90,7 +90,7 @@ function updateProduct(quant, item) {
         "UPDATE products SET stock_quantity = ? WHERE item_id = ?", [quant, item],
         function (err, results) {
             if (err) throw err;
-            callData()
+            callData(updateOrBuy)
         }
     )
 }
