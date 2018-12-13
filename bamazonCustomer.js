@@ -19,13 +19,13 @@ connection.connect(function (err) {
     console.log("connected as id " + connection.threadId + "\n");
 });
 
-function callData(){ 
-connection.query(
-    'SELECT item_id, product_name, price, stock_quantity FROM products;', function (error, results) {
-        if (error) throw error;
-        console.table(results);
-        promptItem();
-    });
+function callData() {
+    connection.query(
+        'SELECT item_id, product_name, price, stock_quantity FROM products;', function (error, results) {
+            if (error) throw error;
+            console.table(results);
+            promptItem();
+        });
 }
 
 callData()
@@ -33,7 +33,7 @@ callData()
 function promptItem() {
     inquirer.prompt([
         {
-            name: "item",
+            name: "itemID",
             type: "input",
             message: "What is the item_id on the product you would like to purchase?"
         },
@@ -45,26 +45,33 @@ function promptItem() {
     ])
         .then(function (ans) {
             connection.query(
-                "SELECT stock_quantity FROM products WHERE item_id = ?", 
-                [ans.item], 
-                function (err, results) 
-                {
+                "SELECT stock_quantity FROM products WHERE item_id = ?",
+                [ans.itemID],
+                function (err, results) {
                     if (err) throw err;
                     console.log("results ", results[0].stock_quantity);
                     console.log(Number(ans.quantity));
                     var dbQuantity = results[0].stock_quantity;
-                    var  inquireQuantity= Number(ans.quantity);
+                    var inquireQuantity = Number(ans.quantity);
                     if (dbQuantity >= inquireQuantity) {
-                        console.log("it's a match!");
-
-                        callData()
+                        console.log("\n \n \n Wonderful! Enjoy your purchase!\n \n \n");
+                        var newQuantity = dbQuantity - inquireQuantity
+                        updateProduct(newQuantity, ans.itemID);
                     } else {
-                        console.log("Not enough product. Choose another item \n \n");
+                        console.log("\n \n \n Not enough product. Choose another item \n \n \n");
                         callData();
                     }
                 }
             );
         })
-    }
+}
 
-    // 
+function updateProduct(quant, item) {
+    connection.query(
+        "UPDATE products SET stock_quantity = ? WHERE item_id = ?", [quant, item],
+        function (err, results) {
+            if (err) throw err;
+            callData()
+        }
+    )
+}
