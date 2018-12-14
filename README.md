@@ -35,4 +35,15 @@ Pseudo Code & Process details
     ??????????????????????????????????????
     a) perform subtraction and assign new variable to new value
     b) update the value in the database
-    c)start the whole program over
+    c) start the whole program over
+        Travis helped me bring it together. Good to understand that after a query, mySQL takes input in array format [?one, ?two, ?three] to replace the ? values in the query statement
+
+6) BONUS - can I now AADJUST products quantity?
+Steps
+    a) change first inquirer to have 2 options - buy an item or adjust an item - done!
+    b) if they buy, go into current program - done!
+    c) if they adjust - they can choose price or quantity or name or department
+    d) depending on which one they choose, prompt for  updated amount/data
+    e) UPDATE db, return results and start over
+
+7) BONUS 2 - use dotenv to store database info (cause I didn't to this in the Liri homework)

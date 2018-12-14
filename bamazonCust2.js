@@ -3,7 +3,7 @@ var inquirer = require("inquirer");
 var cTable = require("console.table");
 const chalk = require('chalk');
 require("dotenv").config();
-var fs = require("fs");
+
 
 
 var connection = mysql.createConnection({
@@ -14,13 +14,12 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
+updateOrBuy();
+
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
+    // console.log("connected as id " + connection.threadId + "\n");
 });
-
-
-updateOrBuy();
 
 
 function updateOrBuy() {
@@ -32,10 +31,10 @@ function updateOrBuy() {
             choices: ["Buy an item", "Update an item"]
         }
     ]).then(function (ans) {
-        if (ans.buyOrChange === "Buy an item") { 
+        if (ans.buyOrChange === "Buy an item") {
             callData(promptItem)
         } else {
-            console.log("This will be awesome if I see this!")
+            callData(updateChoices)
         }
     })
 }
@@ -68,14 +67,12 @@ function promptItem() {
                 [ans.itemID],
                 function (err, results) {
                     if (err) throw err;
-                    console.log("results ", results[0].stock_quantity);
-                    console.log(Number(ans.quantity));
                     var dbQuantity = results[0].stock_quantity;
                     var inquireQuantity = Number(ans.quantity);
                     if (dbQuantity >= inquireQuantity) {
                         console.log("\n \n \n Wonderful! Enjoy your purchase!\n \n \n");
                         var newQuantity = dbQuantity - inquireQuantity
-                        updateProduct(newQuantity, ans.itemID);
+                        buyProduct(newQuantity, ans.itemID);
                     } else {
                         console.log("\n \n \n Not enough product. Choose another item \n \n \n");
                         callData(updateOrBuy);
@@ -85,7 +82,7 @@ function promptItem() {
         })
 }
 
-function updateProduct(quant, item) {
+function buyProduct(quant, item) {
     connection.query(
         "UPDATE products SET stock_quantity = ? WHERE item_id = ?", [quant, item],
         function (err, results) {
@@ -93,4 +90,85 @@ function updateProduct(quant, item) {
             callData(updateOrBuy)
         }
     )
+}
+
+function updateChoices() {
+    inquirer.prompt([
+        {
+            name: "itemIDforUpdate",
+            type: "input",
+            message: "What is the item_id for the item you would like to update?"
+        },
+        {
+            name: "chooseUpdateField",
+            type: "list",
+            message: "What about that item would you like to update",
+            choices: ["product_name", "department_name", "price", "stock_quantity"]
+        }
+    ]).then(function (ans) {
+        var id = (ans.itemIDforUpdate)
+
+        if (ans.chooseUpdateField === "product_name") {
+            updateName(id)
+        }
+        // else if (ans.chooseUpdateField === department_name) {
+        //     updateDept(id)
+        // }
+        // else if (ans.chooseUpdateField === price) {
+        //     updatePrice(id)
+        // }
+        // else if (ans.chooseUpdateField === stock_quantity) {
+        //     updateQty(id)
+        // }~~~~~~~~~~~~~~~~~~~~~~~
+        // console.log(id)
+    })
+}
+
+
+function updateName(item_id) {
+    inquirer.prompt([
+        {
+            name: "nameUpdate",
+            type: "input",
+            message: "What is the new name you would like to display?"
+        },
+    ]) .then(function (ans) {
+        connection.query(
+            "UPDATE products SET product_name = ? WHERE item_id = ?", [ans.nameUpdate, item_id],
+            function (err, results) {
+                if (err) throw err;
+                callData(updateOrBuy)
+            }
+        )
+    })
+}
+
+function updateDept() {
+    inquirer.prompt([
+        {
+            name: "deptUpdate",
+            type: "input",
+            message: "What is the appropriate department for this item?"
+        },
+    ]) .then(function (ans) {})
+}
+
+function updatePrice() {
+    inquirer.prompt([
+        {
+            name: "priceUpdate",
+            type: "input",
+            message: "How much would you like to charge for this item?"
+        },
+    ]) .then(function (ans) {})
+}
+
+function updateQty() {
+    inquirer.prompt([
+        {
+            name: "qtyUpdate",
+            type: "input",
+            message: "How many of this item are available?"
+        },
+    ]) .then(function (ans) {})
 }
