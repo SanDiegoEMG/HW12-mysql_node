@@ -28,20 +28,22 @@ function updateOrBuy() {
             name: "buyOrChange",
             type: "list",
             message: "What would you like to do in the Bamazon store today?",
-            choices: ["Buy an item", "Update an item"]
+            choices: ["Buy an item", "Update an item", "Quit"]
         }
     ]).then(function (ans) {
         if (ans.buyOrChange === "Buy an item") {
             callData(promptItem)
-        } else {
+        } else if (ans.buyOrChange === "Update an item") {
             callData(updateChoices)
-        }
+        } else (
+            connection.end()
+        )
     })
-}
+};
 
 function callData(callback) {
     connection.query(
-        'SELECT item_id, product_name, price, stock_quantity FROM products;', function (error, results) {
+        'SELECT item_id, product_name, department_name, price, stock_quantity FROM products;', function (error, results) {
             if (error) throw error;
             console.table(results);
             callback();
@@ -111,18 +113,17 @@ function updateChoices() {
         if (ans.chooseUpdateField === "product_name") {
             updateName(id)
         }
-        // else if (ans.chooseUpdateField === department_name) {
-        //     updateDept(id)
-        // }
-        // else if (ans.chooseUpdateField === price) {
-        //     updatePrice(id)
-        // }
-        // else if (ans.chooseUpdateField === stock_quantity) {
-        //     updateQty(id)
-        // }~~~~~~~~~~~~~~~~~~~~~~~
-        // console.log(id)
+        else if (ans.chooseUpdateField === "department_name") {
+            updateDept(id)
+        }
+        else if (ans.chooseUpdateField === "price") {
+            updatePrice(id)
+        }
+        else if (ans.chooseUpdateField === "stock_quantity") {
+            updateQty(id)
+        }
     })
-}
+};
 
 
 function updateName(item_id) {
@@ -132,7 +133,7 @@ function updateName(item_id) {
             type: "input",
             message: "What is the new name you would like to display?"
         },
-    ]) .then(function (ans) {
+    ]).then(function (ans) {
         connection.query(
             "UPDATE products SET product_name = ? WHERE item_id = ?", [ans.nameUpdate, item_id],
             function (err, results) {
@@ -141,34 +142,62 @@ function updateName(item_id) {
             }
         )
     })
-}
+};
 
-function updateDept() {
+function updateDept(item_id) {
     inquirer.prompt([
         {
             name: "deptUpdate",
             type: "input",
-            message: "What is the appropriate department for this item?"
+            message: "What department do you want listed for this item?"
         },
-    ]) .then(function (ans) {})
-}
+    ]).then(function (ans) {
+        console.log(ans.deptUpdate)
+        connection.query(
+            "UPDATE products SET department_name = ? WHERE item_id = ?", [ans.deptUpdate, item_id],
+            function (err, results) {
+                if (err) throw err;
+                callData(updateOrBuy)
+            }
+        )
+    })
+};
 
-function updatePrice() {
+function updatePrice(item_id) {
     inquirer.prompt([
         {
             name: "priceUpdate",
             type: "input",
             message: "How much would you like to charge for this item?"
         },
-    ]) .then(function (ans) {})
+    ]).then(function (ans) {
+        console.log(ans.priceUpdate)
+        connection.query(
+            "UPDATE products SET price = ? WHERE item_id = ?", [ans.priceUpdate, item_id],
+            function (err, results) {
+                if (err) throw err;
+                callData(updateOrBuy)
+            }
+        )
+    })
 }
 
-function updateQty() {
+function updateQty(item_id) {
     inquirer.prompt([
         {
             name: "qtyUpdate",
             type: "input",
             message: "How many of this item are available?"
         },
-    ]) .then(function (ans) {})
+    ]).then(function (ans) {
+        console.log(ans.qtyUpdate)
+        connection.query(
+            "UPDATE products SET stock_quantity = ? WHERE item_id = ?", [ans.qtyUpdate, item_id],
+            function (err, results) {
+                if (err) throw err;
+                callData(updateOrBuy)
+            }
+        )
+
+    })
 }
