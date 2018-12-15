@@ -16,7 +16,7 @@ updateOrBuy();
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
+    // console.log("connected as id " + connection.threadId + "\n");
 });
 
 
@@ -70,9 +70,9 @@ function promptItem() {
                     var dbQuantity = results[0].stock_quantity;
                     var inquireQuantity = Number(ans.quantity);
                     if (dbQuantity >= inquireQuantity) {
-                        console.log("\n \n \n Wonderful! Enjoy your purchase!\n \n \n");
+                        totalPrice(ans.itemID, inquireQuantity);
                         var newQuantity = dbQuantity - inquireQuantity
-                        buyProduct(newQuantity, ans.itemID);
+                        buyProduct(newQuantity, ans.itemID) 
                     } else {
                         console.log("\n \n \n Not enough product. Choose another item \n \n \n");
                         callData(updateOrBuy);
@@ -88,6 +88,17 @@ function buyProduct(quant, item) {
         function (err, results) {
             if (err) throw err;
             callData(updateOrBuy)
+        }
+    )
+}
+
+function totalPrice(itemID, quantityBought) {
+    connection.query(
+        "SELECT price FROM products WHERE item_id = ?", [itemID],
+        function (err, results) {
+            if (err) throw err;
+            console.log("\n\n\nYour Total today =  $" + ((Number(results[0].price) * Number(quantityBought)).toFixed(2)))
+            console.log("Enjoy your purchase!\n\n");
         }
     )
 }

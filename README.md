@@ -45,5 +45,7 @@ Steps
     c) if they adjust - they can choose price or quantity or name or department
     d) depending on which one they choose, prompt for  updated amount/data
     e) UPDATE db, return results and start over
+        Got it done - feels great!
 
 7) BONUS 2 - use dotenv to store database info (cause I didn't to this in the Liri homework)
+    Done! It is simple to use
