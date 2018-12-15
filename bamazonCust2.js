@@ -4,13 +4,11 @@ var cTable = require("console.table");
 const chalk = require('chalk');
 require("dotenv").config();
 
-
-
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "knowit2018",
+    password: process.env.mysqlpassword,
     database: "bamazon"
 });
 
@@ -18,7 +16,7 @@ updateOrBuy();
 
 connection.connect(function (err) {
     if (err) throw err;
-    // console.log("connected as id " + connection.threadId + "\n");
+    console.log("connected as id " + connection.threadId + "\n");
 });
 
 
